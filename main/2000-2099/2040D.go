@@ -11,11 +11,9 @@ func cf2040D(in io.Reader, _w io.Writer) {
 	out := bufio.NewWriter(_w)
 	defer out.Flush()
 	const mx int = 4e5 + 1
-	primes := []int{}
 	np := [mx]bool{1: true}
-	for i := 2; i < mx; i++ {
+	for i := 2; i*i < mx; i++ {
 		if !np[i] {
-			primes = append(primes, i)
 			for j := i * i; j < mx; j += i {
 				np[j] = true
 			}
