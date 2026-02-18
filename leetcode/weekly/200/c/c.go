@@ -1,28 +1,32 @@
 package main
 
 // github.com/EndlessCheng/codeforces-go
-func minSwaps(mat [][]int) (ans int) {
-	n := len(mat)
-	a := make([]int, n)
-	for i, row := range mat {
-		for j := len(row) - 1; j >= 0; j-- {
-			if row[j] > 0 {
-				a[i] = j + 1
+func minSwaps(grid [][]int) (ans int) {
+	// 预处理每一行的尾零个数
+	n := len(grid)
+	tailZeros := make([]int, n)
+	for i, row := range grid {
+		tailZeros[i] = n
+		for j := n - 1; j >= 0; j-- {
+			if row[j] == 1 {
+				tailZeros[i] = n - 1 - j
 				break
 			}
 		}
 	}
-	for i := range a {
-		j := i
-		for ; j < n && a[j] > i+1; j++ {
+
+next:
+	for i := range n - 1 {
+		needZeros := n - 1 - i
+		for j := i; j < n; j++ {
+			if tailZeros[j] >= needZeros {
+				ans += j - i
+				// 从 j 换到 i，原来 [i, j-1] 中的数据全体右移一位
+				copy(tailZeros[i+1:j+1], tailZeros[i:j])
+				continue next
+			}
 		}
-		if j == n {
-			return -1
-		}
-		ans += j - i
-		for ; j > i; j-- {
-			a[j], a[j-1] = a[j-1], a[j]
-		}
+		return -1
 	}
 	return
 }
