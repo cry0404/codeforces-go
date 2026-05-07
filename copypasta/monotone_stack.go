@@ -47,6 +47,7 @@ https://codeforces.com/problemset/problem/631/C 1700
 https://codeforces.com/problemset/problem/280/B 1800 转换
 https://codeforces.com/problemset/problem/1691/D 1800 max >= sum
 https://codeforces.com/problemset/problem/1919/D 2100 结论
+https://codeforces.com/problemset/problem/1849/E 2300 思想类似启发式合并
 https://codeforces.com/problemset/problem/1117/G 2500 最大子数组和
 https://codeforces.com/problemset/problem/1827/C 2600 Manacher DP
 https://codeforces.com/problemset/problem/2064/F 2600
