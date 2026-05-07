@@ -3,20 +3,13 @@ package main
 // github.com/EndlessCheng/codeforces-go
 func canReach(s string, minJump, maxJump int) bool {
 	n := len(s)
-	sum := make([]int, n+1) // dp 前缀和
-	sum[1] = 1
-	for i := 1; i < n; i++ {
-		sum[i+1] = sum[i]
-		if i >= minJump && s[i] == '0' && sum[i-minJump+1] > sum[max(0, i-maxJump)] {
-			sum[i+1]++
+	sum := make([]int, n+1) // f 的前缀和
+	sum[1] = 1 // f[0] = true
+	for j := 1; j < n; j++ {
+		sum[j+1] = sum[j]
+		if j >= minJump && s[j] == '0' && sum[j-minJump+1] > sum[max(j-maxJump, 0)] {
+			sum[j+1]++ // f[j] = true
 		}
 	}
-	return sum[n] > sum[n-1]
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	return sum[n] > sum[n-1] // f[n-1] == true
 }
