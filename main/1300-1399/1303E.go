@@ -1,60 +1,38 @@
 package main
 
 import (
-	"bufio"
 	. "fmt"
 	"io"
 )
 
-// github.com/EndlessCheng/codeforces-go
-func CF1303E(_r io.Reader, _w io.Writer) {
-	in := bufio.NewReader(_r)
-	out := bufio.NewWriter(_w)
-	defer out.Flush()
-
+// https://github.com/EndlessCheng
+func cf1303E(in io.Reader, out io.Writer) {
 	var T int
 	var s, t []byte
 o:
 	for Fscan(in, &T); T > 0; T-- {
 		Fscan(in, &s, &t)
-		for i := range t {
-			t[i] -= 'a'
-		}
-		n := len(s)
-		r := [26]int{}
-		for i := range r {
-			r[i] = n
-		}
-		nxt := make([][26]int, n+2)
-		for i := range nxt[n+1] {
-			nxt[n+1][i] = n
-		}
-		nxt[n] = r
-		for i := n - 1; i >= 0; i-- {
-			r[s[i]-'a'] = i
-			nxt[i] = r
-		}
-
-		m := len(t)
-		f := make([][]int, m)
-		for i := range f {
-			f[i] = make([]int, m)
-		}
-		for k := 1; k < m; k++ {
-			for i, v := range t[:k] {
-				for j, w := range t[k:] {
-					if i == 0 && j == 0 {
-						f[i][j] = -1
-					} else if i == 0 {
-						f[i][j] = nxt[f[i][j-1]+1][w]
-					} else if j == 0 {
-						f[i][j] = nxt[f[i-1][j]+1][v]
-					} else {
-						f[i][j] = min(nxt[f[i-1][j]+1][v], nxt[f[i][j-1]+1][w])
+		f := make([]int, len(t))
+		for mid := range t {
+			a, b := t[:mid], t[mid:]
+			f[0] = 0
+			for j := 1; j <= mid; j++ {
+				f[j] = -1e9
+			}
+			for _, x := range s {
+				for j := mid; j >= 0; j-- {
+					k := f[j]
+					res := k
+					if 0 <= k && k < len(b) && x == b[k] {
+						res = k + 1
 					}
+					if j > 0 && x == a[j-1] {
+						res = max(res, f[j-1])
+					}
+					f[j] = res
 				}
 			}
-			if f[k-1][n-k-1] < n {
+			if f[mid] == len(b) {
 				Fprintln(out, "YES")
 				continue o
 			}
@@ -63,4 +41,4 @@ o:
 	}
 }
 
-//func main() { CF1303E(os.Stdin, os.Stdout) }
+//func main() { cf1303E(os.Stdin, os.Stdout) }
