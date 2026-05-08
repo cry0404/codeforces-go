@@ -2,68 +2,132 @@ package main
 
 import (
 	"math"
+	"math/bits"
+	"slices"
+	"sort"
 )
 
 // https://space.bilibili.com/206214
-type node struct {
-	lo, ro   *node
-	l, r, mx int
-}
+func maximumJumps1(nums []int, target int) int {
+	n := len(nums)
+	memo := make([]int, n)
 
-func (o *node) get() int {
-	if o != nil {
-		return o.mx
+	var dfs func(int) int
+	dfs = func(j int) int {
+		if j == 0 {
+			return 0
+		}
+
+		p := &memo[j]
+		if *p != 0 { // 之前计算过
+			return *p
+		}
+
+		res := math.MinInt
+		for i, x := range nums[:j] {
+			if abs(x-nums[j]) <= target { // 可以从 i 跳到 j
+				res = max(res, dfs(i)+1)
+			}
+		}
+		*p = res // 记忆化
+		return res
 	}
-	return math.MinInt
+
+	ans := dfs(n - 1)
+	if ans < 0 {
+		return -1
+	}
+	return ans
 }
 
-func (o *node) update(i, val int) {
-	if o.l == o.r {
-		o.mx = max(o.mx, val)
+func maximumJumps2(nums []int, target int) int {
+	n := len(nums)
+	f := make([]int, n)
+	for i := 1; i < n; i++ {
+		f[i] = math.MinInt
+	}
+
+	for j := 1; j < n; j++ {
+		for i, x := range nums[:j] {
+			if abs(x-nums[j]) <= target { // 可以从 i 跳到 j
+				f[j] = max(f[j], f[i]+1)
+			}
+		}
+	}
+
+	if f[n-1] < 0 {
+		return -1
+	}
+	return f[n-1]
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+//
+
+// 完整模板见 https://leetcode.cn/circle/discuss/mOr1u6/
+type seg []int
+
+func (t seg) update(node, l, r, i, val int) {
+	if l == r { // 叶子
+		t[node] = val
 		return
 	}
-	m := (o.l + o.r) >> 1
-	if i <= m {
-		if o.lo == nil {
-			o.lo = &node{l: o.l, r: m, mx: math.MinInt}
-		}
-		o.lo.update(i, val)
-	} else {
-		if o.ro == nil {
-			o.ro = &node{l: m + 1, r: o.r, mx: math.MinInt}
-		}
-		o.ro.update(i, val)
+	m := (l + r) / 2
+	if i <= m { // i 在左子树
+		t.update(node*2, l, m, i, val)
+	} else { // i 在右子树
+		t.update(node*2+1, m+1, r, i, val)
 	}
-	o.mx = max(o.lo.get(), o.ro.get())
+	t[node] = max(t[node*2], t[node*2+1])
 }
 
-func (o *node) query(l, r int) int {
-	if o == nil || l > o.r || r < o.l {
-		return math.MinInt
+func (t seg) query(node, l, r, ql, qr int) int {
+	if ql <= l && r <= qr { // 当前子树完全在 [ql, qr] 内
+		return t[node]
 	}
-	if l <= o.l && o.r <= r {
-		return o.mx
+	m := (l + r) / 2
+	if qr <= m { // [ql, qr] 在左子树
+		return t.query(node*2, l, m, ql, qr)
 	}
-	return max(o.lo.query(l, r), o.ro.query(l, r))
+	if ql > m { // [ql, qr] 在右子树
+		return t.query(node*2+1, m+1, r, ql, qr)
+	}
+	return max(t.query(node*2, l, m, ql, qr), t.query(node*2+1, m+1, r, ql, qr))
 }
 
 func maximumJumps(nums []int, target int) int {
-	n, mx := len(nums), 0
-	rt := &node{l: -3e9, r: 3e9, mx: math.MinInt}
-	rt.update(nums[0], 0)
-	for i := 1; i<n; i++ {
-		mx = rt.query(nums[i]-target, nums[i]+target) + 1
-		rt.update(nums[i], mx)
-	}
-	if mx < 0 {
-		return -1
-	}
-	return mx
-}
+	// 排序去重，便于离散化
+	sorted := slices.Clone(nums)
+	slices.Sort(sorted)
+	sorted = slices.Compact(sorted)
 
-func max(a, b int) int {
-	if b > a {
-		return b
+	n := len(nums)
+	m := len(sorted)
+
+	t := make(seg, 2<<bits.Len(uint(m-1)))
+	for i := range t {
+		t[i] = math.MinInt
 	}
-	return a
+
+	// nums[0] 对应的 f[0] = 0
+	t.update(1, 0, m-1, sort.SearchInts(sorted, nums[0]), 0)
+
+	for j := 1; ; j++ {
+		l := sort.SearchInts(sorted, nums[j]-target)       // >= nums[j]-target 的第一个数
+		r := sort.SearchInts(sorted, nums[j]+target+1) - 1 // <= nums[j]+target 的最后一个数
+		fj := t.query(1, 0, m-1, l, r) + 1
+		if j == n-1 {
+			if fj < 0 {
+				return -1
+			}
+			return fj
+		}
+		t.update(1, 0, m-1, sort.SearchInts(sorted, nums[j]), fj)
+	}
 }
