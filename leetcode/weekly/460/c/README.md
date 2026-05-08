@@ -37,12 +37,11 @@ class Solution:
             for p in prime_factors[x]:
                 groups[p].append(i)  # 对于质数 p，可以跳到下标 i
 
-        ans = 0
         vis = [False] * n
         vis[0] = True
         q = [0]
 
-        while True:
+        for ans in count(0):
             tmp = q
             q = []
             for i in tmp:
@@ -57,7 +56,6 @@ class Solution:
                         vis[j] = True
                         q.append(j)
                 idx.clear()  # 避免重复访问下标列表
-            ans += 1
 ```
 
 ```java [sol-Java]
@@ -67,7 +65,7 @@ class Solution {
     private static boolean initialized = false;
 
     // 这样写比 static block 更快
-    private void init() {
+    public Solution() {
         if (initialized) {
             return;
         }
@@ -85,8 +83,6 @@ class Solution {
     }
 
     public int minJumps(int[] nums) {
-        init();
-
         int n = nums.length;
         Map<Integer, List<Integer>> groups = new HashMap<>();
         for (int i = 0; i < n; i++) {
@@ -96,12 +92,11 @@ class Solution {
             }
         }
 
-        int ans = 0;
         boolean[] vis = new boolean[n];
         vis[0] = true;
         List<Integer> q = List.of(0);
 
-        while (true) {
+        for (int ans = 0; ; ans++) {
             List<Integer> tmp = q;
             q = new ArrayList<>();
             for (int i : tmp) {
@@ -121,7 +116,6 @@ class Solution {
                 }
                 idx.clear(); // 避免重复访问下标列表
             }
-            ans++;
         }
     }
 }
@@ -154,12 +148,11 @@ public:
             }
         }
 
-        int ans = 0;
         vector<int8_t> vis(n);
         vis[0] = true;
         vector<int> q = {0};
 
-        while (true) {
+        for (int ans = 0; ; ans++) {
             auto tmp = q;
             q.clear();
             for (int i : tmp) {
@@ -179,7 +172,6 @@ public:
                 }
                 idx.clear(); // 避免重复访问下标列表
             }
-            ans++;
         }
     }
 };
@@ -213,7 +205,8 @@ func minJumps(nums []int) (ans int) {
 	vis := make([]bool, n)
 	vis[0] = true
 	q := []int{0}
-	for {
+
+	for ; ; ans++ {
 		tmp := q
 		q = nil
 		for _, i := range tmp {
@@ -233,7 +226,6 @@ func minJumps(nums []int) (ans int) {
 			}
 			delete(groups, nums[i]) // 避免重复访问下标列表
 		}
-		ans++
 	}
 }
 ```
@@ -267,7 +259,7 @@ class Solution:
         n = len(nums)
         groups = defaultdict(list)
         for i, x in enumerate(nums):
-            if len(prime_factors[x]) == 1:  # x 是质数
+            if prime_factors[x] and prime_factors[x][0] == x:  # x 是质数
                 groups[x].append(i)
 
         ans = 0
@@ -275,7 +267,7 @@ class Solution:
         vis[-1] = True
         q = [n - 1]
 
-        while True:
+        for ans in count(0):
             tmp = q
             q = []
             for i in tmp:
@@ -295,7 +287,6 @@ class Solution:
                             vis[j] = True
                             q.append(j)
                     idx.clear()  # 避免重复访问下标列表
-            ans += 1
 ```
 
 ```java [sol-Java]
@@ -305,7 +296,7 @@ class Solution {
     private static boolean initialized = false;
 
     // 这样写比 static block 更快
-    private void init() {
+    public Solution() {
         if (initialized) {
             return;
         }
@@ -323,23 +314,20 @@ class Solution {
     }
 
     public int minJumps(int[] nums) {
-        init();
-
         int n = nums.length;
         Map<Integer, List<Integer>> groups = new HashMap<>();
         for (int i = 0; i < n; i++) {
             int x = nums[i];
-            if (primeFactors[x].size() == 1) { // x 是质数
+            if (!primeFactors[x].isEmpty() && primeFactors[x].get(0) == x) { // x 是质数
                 groups.computeIfAbsent(x, _ -> new ArrayList<>()).add(i);
             }
         }
 
-        int ans = 0;
         boolean[] vis = new boolean[n];
         vis[n - 1] = true;
         List<Integer> q = List.of(n - 1);
 
-        while (true) {
+        for (int ans = 0; ; ans++) {
             List<Integer> tmp = q;
             q = new ArrayList<>();
             for (int i : tmp) {
@@ -367,7 +355,6 @@ class Solution {
                     }
                 }
             }
-            ans++;
         }
     }
 }
@@ -396,17 +383,16 @@ public:
         unordered_map<int, vector<int>> groups;
         for (int i = 0; i < n; i++) {
             int x = nums[i];
-            if (prime_factors[x].size() == 1) { // x 是质数
+            if (!prime_factors[x].empty() && prime_factors[x][0] == x) { // x 是质数
                 groups[x].push_back(i);
             }
         }
 
-        int ans = 0;
         vector<int8_t> vis(n);
         vis[n - 1] = true;
         vector<int> q = {n - 1};
 
-        while (true) {
+        for (int ans = 0; ; ans++) {
             auto tmp = q;
             q.clear();
             for (int i : tmp) {
@@ -435,7 +421,6 @@ public:
                     }
                 }
             }
-            ans++;
         }
     }
 };
@@ -461,7 +446,7 @@ func minJumps(nums []int) (ans int) {
 	n := len(nums)
 	groups := map[int][]int{}
 	for i, x := range nums {
-		if len(primeFactors[x]) == 1 { // x 是质数
+		if len(primeFactors[x]) > 0 && primeFactors[x][0] == x { // x 是质数
 			groups[x] = append(groups[x], i)
 		}
 	}
@@ -469,7 +454,8 @@ func minJumps(nums []int) (ans int) {
 	vis := make([]bool, n)
 	vis[n-1] = true
 	q := []int{n - 1}
-	for {
+
+	for ; ; ans++ {
 		tmp := q
 		q = nil
 		for _, i := range tmp {
@@ -495,7 +481,6 @@ func minJumps(nums []int) (ans int) {
 				delete(groups, p) // 避免重复访问下标列表
 			}
 		}
-		ans++
 	}
 }
 ```

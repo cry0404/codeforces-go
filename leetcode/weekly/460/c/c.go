@@ -20,7 +20,7 @@ func minJumps(nums []int) (ans int) {
 	n := len(nums)
 	groups := map[int][]int{}
 	for i, x := range nums {
-		if len(primeFactors[x]) == 1 { // x 是质数
+		if len(primeFactors[x]) > 0 && primeFactors[x][0] == x { // x 是质数
 			groups[x] = append(groups[x], i)
 		}
 	}
@@ -28,7 +28,8 @@ func minJumps(nums []int) (ans int) {
 	vis := make([]bool, n)
 	vis[n-1] = true
 	q := []int{n - 1}
-	for {
+
+	for ; ; ans++ {
 		tmp := q
 		q = nil
 		for _, i := range tmp {
@@ -54,7 +55,6 @@ func minJumps(nums []int) (ans int) {
 				delete(groups, p) // 避免重复访问下标列表
 			}
 		}
-		ans++
 	}
 }
 
@@ -70,7 +70,8 @@ func minJumps1(nums []int) (ans int) {
 	vis := make([]bool, n)
 	vis[0] = true
 	q := []int{0}
-	for {
+
+	for ; ; ans++ {
 		tmp := q
 		q = nil
 		for _, i := range tmp {
@@ -90,6 +91,5 @@ func minJumps1(nums []int) (ans int) {
 			}
 			delete(groups, nums[i]) // 避免重复访问下标列表
 		}
-		ans++
 	}
 }
