@@ -1,38 +1,26 @@
 package main
 
+import "math"
+
 // github.com/EndlessCheng/codeforces-go
-func minMoves(a []int, lim int) (ans int) {
-	n := len(a)
-	d := make([]int, 2*lim+2)
-	cnt := make([]int, 2*lim+1)
-	for i, v := range a[:n/2] {
-		w := a[n-1-i]
-		l, r := 1+min(v, w), lim+max(v, w)
-		d[l]++
-		d[v+w]--
-		d[v+w+1]++
-		d[r+1]--
-		cnt[v+w]++
+func minMoves(nums []int, limit int) int {
+	n := len(nums)
+	diff := make([]int, limit*2+2)
+	for i, x := range nums[:n/2] {
+		y := nums[n-1-i]
+		l := min(x, y) + 1
+		r := max(x, y) + limit
+		diff[l]--
+		diff[x+y]--
+		diff[x+y+1]++
+		diff[r+1]++
 	}
-	ans = 1e9
-	one := 0
-	for s := 2; s <= 2*lim; s++ {
-		one += d[s]
-		ans = min(ans, n-one-2*cnt[s])
-	}
-	return
-}
 
-func min(a, b int) int {
-	if a < b {
-		return a
+	ans := math.MaxInt
+	sum := n
+	for _, d := range diff[2 : limit*2+1] {
+		sum += d
+		ans = min(ans, sum)
 	}
-	return b
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	return ans
 }
