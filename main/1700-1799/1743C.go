@@ -11,17 +11,18 @@ func cf1743C(in io.Reader, out io.Writer) {
 	var s string
 	for Fscan(in, &T); T > 0; T-- {
 		Fscan(in, &n, &s)
-		var ans, sum, mn int
+		ans, mn := 0, 0
 		for i, b := range s {
 			Fscan(in, &v)
 			if b == '1' {
-				sum += v
+				ans += v
 				mn = min(mn, v)
 				if i == n-1 || s[i+1] == '0' {
-					ans += sum - mn
+					ans -= mn
 				}
 			} else if i < n-1 && s[i+1] == '1' {
-				sum, mn = v, v
+				ans += v
+				mn = v
 			}
 		}
 		Fprintln(out, ans)
