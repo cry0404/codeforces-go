@@ -1,57 +1,118 @@
-模拟，枚举每个数的数位。
+## 写法一：用字符串
 
-## 一行写法
+把 $\textit{nums}[i]$ 转成字符串，即可从高到低遍历数位。
 
 ```py [sol-Python3]
 class Solution:
     def separateDigits(self, nums: List[int]) -> List[int]:
-        return [d for x in nums for d in map(int, str(x))]
+        return [int(ch) for x in nums for ch in str(x)]
 ```
 
-## 优化一
+```java [sol-Java]
+class Solution {
+    public int[] separateDigits(int[] nums) {
+        List<Integer> digits = new ArrayList<>();
+        for (int x : nums) {
+            for (char ch : String.valueOf(x).toCharArray()) {
+                digits.add(ch - '0');
+            }
+        }
 
-从低到高枚举数位，翻转新插入的数字。
+        int m = digits.size();
+        int[] ans = new int[m];
+        for (int i = 0; i < m; i++) {
+            ans[i] = digits.get(i);
+        }
+        return ans;
+    }
+}
+```
 
-```py [sol-Python3]
-class Solution:
-    def separateDigits(self, nums: List[int]) -> List[int]:
-        ans = []
-        for x in nums:
-            i0 = len(ans)
-            while x:
-                ans.append(x % 10)
-                x //= 10
-            ans[i0:] = ans[i0:][::-1]  # 忽略切片开销（毕竟你可以手动反转）
-        return ans
+```cpp [sol-C++]
+class Solution {
+public:
+    vector<int> separateDigits(vector<int>& nums) {
+        vector<int> ans;
+        for (int x : nums) {
+            for (char ch : to_string(x)) {
+                ans.push_back(ch - '0');
+            }
+        }
+        return ans;
+    }
+};
 ```
 
 ```go [sol-Go]
 func separateDigits(nums []int) (ans []int) {
 	for _, x := range nums {
-		i0 := len(ans)
-		for ; x > 0; x /= 10 {
-			ans = append(ans, x%10)
+		for _, ch := range strconv.Itoa(x) {
+			ans = append(ans, int(ch-'0'))
 		}
-		slices.Reverse(ans[i0:]) // 原地反转
 	}
 	return
 }
 ```
 
-## 优化二
+#### 复杂度分析
 
-倒着遍历 $\textit{nums}$，这样只需在循环结束后反转。
+- 时间复杂度：$\mathcal{O}(n\log U)$，其中 $n$ 是 $\textit{nums}$ 的长度，$U=\max(\textit{nums})$。
+- 空间复杂度：$\mathcal{O}(\log U)$。返回值不计入。
+
+## 方法二：不用字符串
+
+不断地把 $n$ 除以 $10$（下取整）直到 $0$，例如 $123\to 12\to 1\to 0$。在这个过程中的 $n\bmod 10$，即为每个数位。
+
+这样做是从低到高遍历数位，和题目要求的顺序相反。
+
+我们可以从右到左遍历 $\textit{nums}$，从低到高遍历 $\textit{nums}[i]$ 的数位。最后把遍历过的数位反转，即为答案。
 
 ```py [sol-Python3]
 class Solution:
-    def separateDigits(self, nums: List[int]) -> List[int]:
+    def separateDigits(self, nums: list[int]) -> list[int]:
         ans = []
         for x in reversed(nums):
-            while x:
+            while x > 0:
                 ans.append(x % 10)
                 x //= 10
-        ans.reverse()  # 原地反转
+        ans.reverse()
         return ans
+```
+
+```java [sol-Java]
+class Solution {
+    public int[] separateDigits(int[] nums) {
+        List<Integer> digits = new ArrayList<>();
+        for (int i = nums.length - 1; i >= 0; i--) {
+            for (int x = nums[i]; x > 0; x /= 10) {
+                digits.add(x % 10);
+            }
+        }
+
+        int m = digits.size();
+        int[] ans = new int[m];
+        for (int i = 0; i < m; i++) {
+            ans[i] = digits.get(m - 1 - i);
+        }
+        return ans;
+    }
+}
+```
+
+```cpp [sol-C++]
+class Solution {
+public:
+    vector<int> separateDigits(vector<int>& nums) {
+        vector<int> ans;
+        for (int x : nums | views::reverse) {
+            for (; x > 0; x /= 10) {
+                ans.push_back(x % 10);
+            }
+        }
+        ranges::reverse(ans);
+        return ans;
+    }
+};
 ```
 
 ```go [sol-Go]
@@ -61,14 +122,14 @@ func separateDigits(nums []int) (ans []int) {
 			ans = append(ans, x%10)
 		}
 	}
-	slices.Reverse(ans) // 原地反转
+	slices.Reverse(ans)
 	return
 }
 ```
 
 #### 复杂度分析
 
-- 时间复杂度：$\mathcal{O}(n\log U)$，其中 $n$ 为 $\textit{nums}$ 的长度，$U=max(\textit{nums})$。
+- 时间复杂度：$\mathcal{O}(n\log U)$，其中 $n$ 是 $\textit{nums}$ 的长度，$U=\max(\textit{nums})$。
 - 空间复杂度：$\mathcal{O}(1)$。返回值不计入。
 
 ## 分类题单
@@ -85,7 +146,7 @@ func separateDigits(nums []int) (ans []int) {
 8. [常用数据结构（前缀和/差分/栈/队列/堆/字典树/并查集/树状数组/线段树）](https://leetcode.cn/circle/discuss/mOr1u6/)
 9. [数学算法（数论/组合/概率期望/博弈/计算几何/随机算法）](https://leetcode.cn/circle/discuss/IYT3ss/)
 10. [贪心与思维（基本贪心策略/反悔/区间/字典序/数学/思维/脑筋急转弯/构造）](https://leetcode.cn/circle/discuss/g6KTKL/)
-11. [链表、二叉树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA/一般树）](https://leetcode.cn/circle/discuss/K0n2gO/)
+11. [链表、树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA）](https://leetcode.cn/circle/discuss/K0n2gO/)
 12. [字符串（KMP/Z函数/Manacher/字符串哈希/AC自动机/后缀数组/子序列自动机）](https://leetcode.cn/circle/discuss/SJFwQI/)
 
 [我的题解精选（已分类）](https://github.com/EndlessCheng/codeforces-go/blob/master/leetcode/SOLUTIONS.md)
