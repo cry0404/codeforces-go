@@ -1,40 +1,44 @@
 package main
 
 // github.com/EndlessCheng/codeforces-go
-var dirs = [4][2]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}} // 右下左上
-
 func rotateGrid(grid [][]int, k int) [][]int {
 	m0, n0 := len(grid), len(grid[0])
-	a := make([]int, 0, (m0+n0-2)*2) // 预分配空间
 
 	// 从外到内枚举圈
 	for i := range min(m0, n0) / 2 {
-		m, n := m0-i*2, n0-i*2 // 这一圈的行数和列数
-		x, y := i, i // 这一圈的左上角
-		a = a[:0]
-		for _, dir := range dirs {
-			for range n - 1 {
-				a = append(a, grid[x][y])
-				x += dir[0]
-				y += dir[1]
+		m, n := m0-i*2-1, n0-i*2-1 // 这一圈的行数-1、列数-1
+
+		// 返回这一圈顺时针下标 p 对应 grid 的位置 (x, y)
+		index := func(p int) (x, y int) {
+			// 左上角在 (i, i)
+			if p < n {
+				return i, i + p
 			}
-			m, n = n, m // 见 54. 螺旋矩阵 我的题解
+			if p < n+m {
+				return i + p - n, i + n
+			}
+			if p < n*2+m {
+				return i + m, i - p + n*2 + m
+			}
+			return i - p + (n+m)*2, i
 		}
 
-		shift := k % len(a)
-		a = append(a[shift:], a[:shift]...)
-
-		// 注意此时 (x, y) 又回到了左上角
-		j := 0
-		for _, dir := range dirs {
-			for range n - 1 {
-				grid[x][y] = a[j]
-				j++
-				x += dir[0]
-				y += dir[1]
+		reverse := func(l, r int) {
+			for l < r {
+				x1, y1 := index(l)
+				x2, y2 := index(r)
+				grid[x1][y1], grid[x2][y2] = grid[x2][y2], grid[x1][y1]
+				l++
+				r--
 			}
-			m, n = n, m
 		}
+
+		// 189. 轮转数组（改成向左轮转）
+		size := (m + n) * 2
+		shift := k % size
+		reverse(0, shift-1)
+		reverse(shift, size-1)
+		reverse(0, size-1)
 	}
 
 	return grid
