@@ -1,53 +1,41 @@
 package main
 
 // github.com/EndlessCheng/codeforces-go
-func rotateGrid(a [][]int, k int) [][]int {
-	n, m := len(a), len(a[0])
-	ans := make([][]int, n)
-	for i := range ans {
-		ans[i] = make([]int, m)
-	}
-	lim := min(n, m) / 2
-	for d := 0; d < lim; d++ {
-		b := make([]int, 0, (n+m-d*4-2)*2)
-		for j := d; j < m-d; j++ {
-			b = append(b, a[d][j])
-		}
-		for i := d + 1; i < n-d; i++ {
-			b = append(b, a[i][m-1-d])
-		}
-		for j := m - d - 2; j >= d; j-- {
-			b = append(b, a[n-1-d][j])
-		}
-		for i := n - d - 2; i > d; i-- {
-			b = append(b, a[i][d])
-		}
-		shift := k % len(b)
-		b = append(b[shift:], b[:shift]...)
-		j := 0
-		for i := d; i < m-d; i++ {
-			ans[d][i] = b[j]
-			j++
-		}
-		for i := d + 1; i < n-d; i++ {
-			ans[i][m-1-d] = b[j]
-			j++
-		}
-		for i := m - d - 2; i >= d; i-- {
-			ans[n-1-d][i] = b[j]
-			j++
-		}
-		for i := n - d - 2; i > d; i-- {
-			ans[i][d] = b[j]
-			j++
-		}
-	}
-	return ans
-}
+var dirs = [4][2]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}} // 右下左上
 
-func min(a, b int) int {
-	if a < b {
-		return a
+func rotateGrid(grid [][]int, k int) [][]int {
+	m0, n0 := len(grid), len(grid[0])
+	a := make([]int, 0, (m0+n0-2)*2) // 预分配空间
+
+	// 从外到内枚举圈
+	for i := range min(m0, n0) / 2 {
+		m, n := m0-i*2, n0-i*2 // 这一圈的行数和列数
+		x, y := i, i // 这一圈的左上角
+		a = a[:0]
+		for _, dir := range dirs {
+			for range n - 1 {
+				a = append(a, grid[x][y])
+				x += dir[0]
+				y += dir[1]
+			}
+			m, n = n, m // 见 54. 螺旋矩阵 我的题解
+		}
+
+		shift := k % len(a)
+		a = append(a[shift:], a[:shift]...)
+
+		// 注意此时 (x, y) 又回到了左上角
+		j := 0
+		for _, dir := range dirs {
+			for range n - 1 {
+				grid[x][y] = a[j]
+				j++
+				x += dir[0]
+				y += dir[1]
+			}
+			m, n = n, m
+		}
 	}
-	return b
+
+	return grid
 }
