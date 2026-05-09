@@ -43,11 +43,9 @@ func maximumJumps1(nums []int, target int) int {
 func maximumJumps2(nums []int, target int) int {
 	n := len(nums)
 	f := make([]int, n)
-	for i := 1; i < n; i++ {
-		f[i] = math.MinInt
-	}
 
 	for j := 1; j < n; j++ {
+		f[j] = math.MinInt
 		for i, x := range nums[:j] {
 			if abs(x-nums[j]) <= target { // 可以从 i 跳到 j
 				f[j] = max(f[j], f[i]+1)
