@@ -1,51 +1,213 @@
-[视频讲解](https://www.bilibili.com/video/BV1AM4y1x7r4/)
+## 方法一：辅助数组
 
-首先，一旦有超过 $n$ 的数，直接返回 `false`。
+遍历 $\textit{nums}$，同时用一个 $\textit{cnt}$ 数组统计每个元素的出现次数：
 
-那么剩下的数都是不超过 $n$ 的。
+设 $n$ 是 $\textit{nums}$ 的长度**减一**。设 $x = \textit{nums}[i]$。分类讨论：
 
-对于小于 $n$ 的数，不能超过一次；对于等于 $n$ 的数，不能超过两次。
+- 如果 $x > n$，不满足要求，返回 $\texttt{false}$。注意题目保证 $x\ge 1$，无需判断 $x\le 0$ 的情况。
+- 如果 $x = n$ 且 $x$ 出现次数大于 $2$，返回 $\texttt{false}$。
+- 如果 $x < n$ 且 $x$ 出现次数大于 $1$，返回 $\texttt{false}$。
 
-在这些约束下，对于小于 $n$ 的数不可能有出现 $0$ 次的（否则某个数的出现次数会超过限制）；同理对于 $n$ 不可能只出现一次（否则某个小于 $n$ 的数会出现超过一次）。
+如果没有出现上述情况，返回 $\texttt{true}$。
 
 ```py [sol-Python3]
 class Solution:
     def isGood(self, nums: List[int]) -> bool:
         n = len(nums) - 1
         cnt = [0] * (n + 1)
-        for v in nums:
-            if v > n or v == n and cnt[v] > 1 or v < n and cnt[v]:
+        for x in nums:
+            if (x > n or
+                x == n and cnt[x] > 1 or  # cnt[x] 加一之前 > 1，加一之后 > 2
+                x < n and cnt[x] > 0):    # cnt[x] 加一之前 > 0，加一之后 > 1
                 return False
-            cnt[v] += 1
+            cnt[x] += 1
         return True
+```
+
+```java [sol-Java]
+class Solution {
+    public boolean isGood(int[] nums) {
+        int n = nums.length - 1;
+        int[] cnt = new int[n + 1];
+        for (int x : nums) {
+            if (x > n ||
+                x == n && cnt[x] > 1 || // cnt[x] 加一之前 > 1，加一之后 > 2
+                x < n && cnt[x] > 0) {  // cnt[x] 加一之前 > 0，加一之后 > 1
+                return false;
+            }
+            cnt[x]++;
+        }
+        return true;
+    }
+}
+```
+
+```cpp [sol-C++]
+class Solution {
+public:
+    bool isGood(vector<int>& nums) {
+        int n = nums.size() - 1;
+        vector<int> cnt(n + 1);
+        for (int x : nums) {
+            if (x > n ||
+                x == n && cnt[x] > 1 || // cnt[x] 加一之前 > 1，加一之后 > 2
+                x < n && cnt[x] > 0) {  // cnt[x] 加一之前 > 0，加一之后 > 1
+                return false;
+            }
+            cnt[x]++;
+        }
+        return true;
+    }
+};
 ```
 
 ```go [sol-Go]
 func isGood(nums []int) bool {
 	n := len(nums) - 1
 	cnt := make([]int, n+1)
-	for _, v := range nums {
-		if v > n || v == n && cnt[v] > 1 || v < n && cnt[v] > 0 {
+	for _, x := range nums {
+		if x > n ||
+			x == n && cnt[x] > 1 || // cnt[x] 加一之前 > 1，加一之后 > 2
+			x < n && cnt[x] > 0 {   // cnt[x] 加一之前 > 0，加一之后 > 1
 			return false
 		}
-		cnt[v]++
+		cnt[x]++
 	}
 	return true
 }
 ```
 
-其余写法：
+#### 复杂度分析
 
-```py
+- 时间复杂度：$\mathcal{O}(n)$，其中 $n$ 是 $\textit{nums}$ 的长度。
+- 空间复杂度：$\mathcal{O}(n)$。
+
+## 方法二：把 nums 当作辅助数组
+
+由于 $\textit{nums}$ 中的数都是正整数，我们可以在首次遇到元素 $x$ 时，把 $\textit{nums}[x]$ 改成相反数，这样再次遇到 $|x|$ 时，就能通过 $\textit{nums}[|x|] < 0$ 得知 $\textit{nums}$ 中至少有两个 $|x|$。
+
+对于 $n$，我们需要判断 $n$ 是否出现超过两次，可以单独用一个变量 $\textit{cntN}$ 统计 $n$ 的出现次数。
+
+```py [sol-Python3]
 class Solution:
     def isGood(self, nums: List[int]) -> bool:
         n = len(nums) - 1
-        cnt = Counter(nums)
-        return cnt[n] == 2 and all(cnt[i] == 1 for i in range(1, n))
+        cnt_n = 0
+        for x in nums:
+            x = abs(x)
+            if (x > n or
+                x == n and cnt_n > 1 or
+                x < n and nums[x] < 0):  # x 之前遇到过，现在又遇到了，所以 x 的出现次数至少是 2
+                return False
+            if x == n:
+                cnt_n += 1
+            else:
+                nums[x] = -nums[x]  # 标记 x 遇到过
+        return True
+```
+
+```java [sol-Java]
+class Solution {
+    public boolean isGood(int[] nums) {
+        int n = nums.length - 1;
+        int cntN = 0;
+        for (int x : nums) {
+            x = Math.abs(x);
+            if (x > n ||
+                x == n && cntN > 1 ||
+                x < n && nums[x] < 0) { // x 之前遇到过，现在又遇到了，所以 x 的出现次数至少是 2
+                return false;
+            }
+            if (x == n) {
+                cntN++;
+            } else {
+                nums[x] = -nums[x]; // 标记 x 遇到过
+            }
+        }
+        return true;
+    }
+}
+```
+
+```cpp [sol-C++]
+class Solution {
+public:
+    bool isGood(vector<int>& nums) {
+        int n = nums.size() - 1;
+        int cnt_n = 0;
+        for (int x : nums) {
+            x = abs(x);
+            if (x > n ||
+                x == n && cnt_n > 1 ||
+                x < n && nums[x] < 0) { // x 之前遇到过，现在又遇到了，所以 x 的出现次数至少是 2
+                return false;
+            }
+            if (x == n) {
+                cnt_n++;
+            } else {
+                nums[x] = -nums[x]; // 标记 x 遇到过
+            }
+        }
+        return true;
+    }
+};
+```
+
+```go [sol-Go]
+func isGood(nums []int) bool {
+	n := len(nums) - 1
+	cntN := 0
+	for _, x := range nums {
+		x = abs(x)
+		if x > n ||
+			x == n && cntN > 1 ||
+			x < n && nums[x] < 0 { // x 之前遇到过，现在又遇到了，所以 x 的出现次数至少是 2
+			return false
+		}
+		if x == n {
+			cntN++
+		} else {
+			nums[x] = -nums[x] // 标记 x 遇到过
+		}
+	}
+	return true
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
 ```
 
 #### 复杂度分析
 
-- 时间复杂度：$\mathcal{O}(n)$，其中 $n$ 为 $\textit{nums}$ 的长度。
-- 空间复杂度：$\mathcal{O}(n)$。
+- 时间复杂度：$\mathcal{O}(n)$，其中 $n$ 是 $\textit{nums}$ 的长度。
+- 空间复杂度：$\mathcal{O}(1)$。
+
+## 相似题目
+
+[448. 找到所有数组中消失的数字](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/)
+
+## 分类题单
+
+[如何科学刷题？](https://leetcode.cn/circle/discuss/RvFUtj/)
+
+1. [滑动窗口与双指针（定长/不定长/单序列/双序列/三指针/分组循环）](https://leetcode.cn/circle/discuss/0viNMK/)
+2. [二分算法（二分答案/最小化最大值/最大化最小值/第K小）](https://leetcode.cn/circle/discuss/SqopEo/)
+3. [单调栈（基础/矩形面积/贡献法/最小字典序）](https://leetcode.cn/circle/discuss/9oZFK9/)
+4. [网格图（DFS/BFS/综合应用）](https://leetcode.cn/circle/discuss/YiXPXW/)
+5. [位运算（基础/性质/拆位/试填/恒等式/思维）](https://leetcode.cn/circle/discuss/dHn9Vk/)
+6. [图论算法（DFS/BFS/拓扑排序/基环树/最短路/最小生成树/网络流）](https://leetcode.cn/circle/discuss/01LUak/)
+7. [动态规划（入门/背包/划分/状态机/区间/状压/数位/数据结构优化/树形/博弈/概率期望）](https://leetcode.cn/circle/discuss/tXLS3i/)
+8. [常用数据结构（前缀和/差分/栈/队列/堆/字典树/并查集/树状数组/线段树）](https://leetcode.cn/circle/discuss/mOr1u6/)
+9. [数学算法（数论/组合/概率期望/博弈/计算几何/随机算法）](https://leetcode.cn/circle/discuss/IYT3ss/)
+10. [贪心与思维（基本贪心策略/反悔/区间/字典序/数学/思维/脑筋急转弯/构造）](https://leetcode.cn/circle/discuss/g6KTKL/)
+11. [链表、树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA）](https://leetcode.cn/circle/discuss/K0n2gO/)
+12. [字符串（KMP/Z函数/Manacher/字符串哈希/AC自动机/后缀数组/子序列自动机）](https://leetcode.cn/circle/discuss/SJFwQI/)
+
+[我的题解精选（已分类）](https://github.com/EndlessCheng/codeforces-go/blob/master/leetcode/SOLUTIONS.md)
+
+欢迎关注 [B站@灵茶山艾府](https://space.bilibili.com/206214)
 
