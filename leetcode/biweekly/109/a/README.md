@@ -188,7 +188,8 @@ func abs(x int) int {
 
 ## 相似题目
 
-[448. 找到所有数组中消失的数字](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/)
+- [442. 数组中重复的数据](https://leetcode.cn/problems/find-all-duplicates-in-an-array/)
+- [448. 找到所有数组中消失的数字](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/)
 
 ## 分类题单
 
