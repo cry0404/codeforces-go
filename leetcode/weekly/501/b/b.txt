@@ -1,0 +1,14 @@
+["hello wor","ld hello"]
+["hello","world","wor"]
+[2,1,0]
+
+["a--b a-","-c"]
+["a","b","c"]
+[2,1,1]
+
+["hello"]
+["hello","ell"]
+[1,0]
+
+
+
