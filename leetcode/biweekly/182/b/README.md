@@ -11,7 +11,7 @@ $s$ 不含子序列 $\texttt{110}$ 或 $\texttt{011}$ ，意味着对于 $s$ 中
 
 两种情况取最小值，即为答案。
 
-下午两点 [B站@灵茶山艾府](https://space.bilibili.com/206214) 直播讲题，欢迎关注~
+[本题视频讲解](https://www.bilibili.com/video/BV1uB5L6YEeX/)，欢迎点赞关注~
 
 ```py [sol-Python3]
 class Solution:
