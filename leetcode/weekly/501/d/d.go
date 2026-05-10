@@ -8,13 +8,10 @@ import (
 // https://space.bilibili.com/206214
 type edge struct{ to, wt int }
 
-// 返回从起点 start 到每个点的最短路长度 dis
-// 要求：没有负数边权
-// 时间复杂度 O(n + mlogm)，注意堆中有 O(m) 个元素
 func dijkstra(g [][]edge, start int, price int) []int {
 	dis := make([]int, len(g))
 	for i := range dis {
-		dis[i] = math.MaxInt / 3 // 避免 p+dis1[j]+dis2[j] 加法溢出
+		dis[i] = price
 	}
 	dis[start] = 0
 	h := hp{{0, start}}
@@ -27,7 +24,7 @@ func dijkstra(g [][]edge, start int, price int) []int {
 		for _, e := range g[x] {
 			y := e.to
 			newD := d + e.wt
-			if newD < price && newD < dis[y] {
+			if newD < dis[y] {
 				dis[y] = newD
 				heap.Push(&h, pair{newD, y})
 			}

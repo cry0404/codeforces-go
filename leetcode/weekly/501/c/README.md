@@ -1,12 +1,12 @@
 每次操作，可以把 $x$ 替换成 $x$ 的因子 $d$，要求 $d$ 在 $\textit{nums}$ 中。
 
-为了让总和尽量小，把 $x$ 替换成 $x$ 的最小的在 $\textit{nums}$ 中的因子是最优的。
+为了让总和尽量小，把 $x$ 替换成 $x$ 的最小因子（因子必须在 $\textit{nums}$ 中）是最优的。
 
-> **注**：替换成最小因子 $d$ 后，不可能再把 $d$ 替换成更小的因子，这是因为 $x$ 的因子的因子也是 $x$ 的因子。
+> **注**：替换成 $x$ 的最小因子 $d$ 后，不可能再把 $d$ 替换成更小的因子，这是因为 $x$ 的因子的因子也是 $x$ 的因子。
 
-预处理 $[1,10^5]$ 每个数的因子，即可快速枚举因子。
+提前预处理 $[1,10^5]$ 每个整数的因子，即可快速枚举因子。
 
-下午两点 [B站@灵茶山艾府](https://space.bilibili.com/206214) 直播讲题，欢迎关注~
+[本题视频讲解](https://www.bilibili.com/video/BV1Vb5L6zEgm/?t=10m20s)，欢迎点赞关注~
 
 ```py [sol-Python3]
 # 预处理每个数的因子
@@ -19,13 +19,14 @@ for i in range(1, MX):
 class Solution:
     def minArraySum(self, nums: list[int]) -> int:
         cnt = Counter(nums)
-
         ans = 0
+
         for x, c in cnt.items():  # 遍历 cnt 而不是 nums，这样重复元素只会计算一次
             for d in divisors[x]:  # 从小到大枚举 x 的因子 d
                 if d in cnt:
                     ans += d * c  # 把 x 变成 d 是最优的
                     break
+
         return ans
 ```
 

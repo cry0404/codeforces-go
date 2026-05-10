@@ -11,9 +11,31 @@
 
 用哈希表统计每个单词的个数，即可快速回答询问。
 
-下午两点 [B站@灵茶山艾府](https://space.bilibili.com/206214) 直播讲题，欢迎关注~
+[本题视频讲解](https://www.bilibili.com/video/BV1Vb5L6zEgm/)，欢迎点赞关注~
 
 ```py [sol-Python3]
+class Solution:
+    def countWordOccurrences(self, chunks: list[str], queries: list[str]) -> list[int]:
+        s = ''.join(chunks)
+        cnt = defaultdict(int)
+
+        for t in s.split():  # 不用 split 的写法见另一份代码
+            n = len(t)
+            i = 0
+            while i < n:
+                if t[i] == '-':
+                    i += 1
+                    continue
+                start = i
+                # 遇到 "--"（连续两个 '-'）就跳出循环
+                while i < n and (t[i] != '-' or i < n - 1 and t[i + 1] != '-'):
+                    i += 1
+                cnt[t[start: i]] += 1
+
+        return [cnt[q] for q in queries]
+```
+
+```py [sol-Python3 不用 split]
 class Solution:
     def countWordOccurrences(self, chunks: list[str], queries: list[str]) -> list[int]:
         s = ''.join(chunks)
@@ -27,7 +49,7 @@ class Solution:
                 continue
             start = i
             # 遇到 ' ' 或者 "--" 或者 "- " 时，跳出循环
-            while i < n and s[i] != ' ' and (s[i] != '-' or (i < n - 1 and s[i + 1] != '-' and s[i + 1] != ' ')):
+            while i < n and s[i] != ' ' and (s[i] != '-' or i < n - 1 and s[i + 1] != '-' and s[i + 1] != ' '):
                 i += 1
             cnt[s[start: i]] += 1
 

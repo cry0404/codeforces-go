@@ -7,16 +7,13 @@
 
 用 Dijkstra 算法求最短路长度。
 
-⚠**剪枝**：由于答案至多为 $\textit{prices}[i]$，所以若算出的最短路长度 $\ge \textit{prices}[i]$，则不入堆。
+**优化**：由于 $\textit{ans}[i] \le \textit{prices}[i]$，所以若算出的最短路长度 $\ge \textit{prices}[i]$，则不入堆。实现时，只需把代码中的 $\textit{dis}$ 元素初始化成 $\textit{prices}[i]$，而不是通常的 $\infty$。同理，边权 $\ge \max(\textit{prices})$ 的边也无需加到图中。
 
-下午两点 [B站@灵茶山艾府](https://space.bilibili.com/206214) 直播讲题，欢迎关注~
+[本题视频讲解](https://www.bilibili.com/video/BV1Vb5L6zEgm/?t=16m55s)，欢迎点赞关注~
 
 ```py [sol-Python3]
-# 返回从起点 start 到每个点的最短路长度 dis，如果节点 x 不可达，则 dis[x] = inf
-# 要求：没有负数边权
-# 时间复杂度 O(n + mlogm)，其中 n 是 g 的长度，m 是 edges 的长度。注意堆中有 O(m) 个元素
-def shortestPathDijkstra(g: list[list[tuple[int, int]]], start: int, price: int) -> list[int]:
-    dis = [inf] * len(g)
+def dijkstra(g: list[list[tuple[int, int]]], start: int, price: int) -> list[int]:
+    dis = [price] * len(g)
     dis[start] = 0  # 起点到自己的距离是 0
     h = [(0, start)]  # 堆中保存 (起点到节点 x 的最短路长度，节点 x)
 
@@ -26,7 +23,7 @@ def shortestPathDijkstra(g: list[list[tuple[int, int]]], start: int, price: int)
             continue
         for y, wt in g[x]:
             new_dis_y = dis_x + wt
-            if new_dis_y < price and new_dis_y < dis[y]:  # 剪枝
+            if new_dis_y < dis[y]:
                 dis[y] = new_dis_y  # 更新 x 的邻居的最短路
                 # 懒更新堆：只插入数据，不更新堆中数据
                 # 相同节点可能有多个不同的 new_dis_y，除了最小的 new_dis_y，其余值都会触发上面的 continue
@@ -46,71 +43,75 @@ class Solution:
 
         ans = [0] * n
         for i, price in enumerate(prices):
-            dis1 = shortestPathDijkstra(g1, i, price)
-            dis2 = shortestPathDijkstra(g2, i, price)
+            dis1 = dijkstra(g1, i, price)
+            dis2 = dijkstra(g2, i, price)
             ans[i] = min(p + d1 + d2 for p, d1, d2 in zip(prices, dis1, dis2))
         return ans
 ```
 
 ```java [sol-Java]
 class Solution {
-    private record Pair(int x, long y) {
-    }
-
     public int[] minCost(int n, int[] prices, int[][] roads) {
-        List<Pair>[] g1 = new ArrayList[n];
-        List<Pair>[] g2 = new ArrayList[n];
+        int maxPrices = 0;
+        for (int p : prices) {
+            maxPrices = Math.max(maxPrices, p);
+        }
+
+        List<int[]>[] g1 = new ArrayList[n];
+        List<int[]>[] g2 = new ArrayList[n];
         Arrays.setAll(g1, _ -> new ArrayList<>());
         Arrays.setAll(g2, _ -> new ArrayList<>());
         for (int[] e : roads) {
             int x = e[0], y = e[1], cost = e[2], tax = e[3];
-            g1[x].add(new Pair(y, cost));
-            g1[y].add(new Pair(x, cost));
-            g2[x].add(new Pair(y, (long) cost * tax));
-            g2[y].add(new Pair(x, (long) cost * tax));
+            if (cost < maxPrices) {
+                g1[x].add(new int[]{y, cost});
+                g1[y].add(new int[]{x, cost});
+            }
+            if (cost <= (maxPrices - 1) / tax) { // cost * tax < maxPrices 避免溢出的写法
+                g2[x].add(new int[]{y, cost * tax});
+                g2[y].add(new int[]{x, cost * tax});
+            }
         }
 
         int[] ans = new int[n];
         for (int i = 0; i < n; i++) {
-            int price = prices[i];
-            long[] dis1 = shortestPathDijkstra(g1, i, price);
-            long[] dis2 = shortestPathDijkstra(g2, i, price);
-            long res = Long.MAX_VALUE;
+            int[] dis1 = dijkstra(g1, i, prices[i]);
+            int[] dis2 = dijkstra(g2, i, prices[i]);
+            int res = Integer.MAX_VALUE;
             for (int j = 0; j < n; j++) {
-                res = Math.min(res, prices[j] + dis1[j] + dis2[j]);
+                if (dis1[j] + dis2[j] < res - prices[j]) { // 为避免加法溢出，把 prices[j] 移到右边
+                    res = prices[j] + dis1[j] + dis2[j];
+                }
             }
-            ans[i] = (int) res;
+            ans[i] = res;
         }
 
         return ans;
     }
 
-    // 返回从起点 start 到每个点的最短路长度 dis
-    // 要求：没有负数边权
-    // 时间复杂度 O(n + mlogm)，注意堆中有 O(m) 个元素
-    private long[] shortestPathDijkstra(List<Pair>[] g, int start, int price) {
-        long[] dis = new long[g.length];
-        Arrays.fill(dis, Long.MAX_VALUE / 3); // 避免 prices[j] + dis1[j] + dis2[j] 溢出
-        // 堆中保存 (节点 x, 起点到节点 x 的最短路长度)
-        PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingLong(a -> a.y));
+    private int[] dijkstra(List<int[]>[] g, int start, int price) {
+        int[] dis = new int[g.length];
+        Arrays.fill(dis, price);
+        // 堆中保存 (起点到节点 x 的最短路长度，节点 x)
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
         dis[start] = 0; // 起点到自己的距离是 0
-        pq.offer(new Pair(start, 0));
+        pq.offer(new int[]{0, start});
 
         while (!pq.isEmpty()) {
-            Pair p = pq.poll();
-            int x = p.x;
-            long disX = p.y;
+            int[] top = pq.poll();
+            int disX = top[0];
+            int x = top[1];
             if (disX > dis[x]) { // x 之前出堆过
                 continue;
             }
-            for (Pair e : g[x]) {
-                int y = e.x;
-                long newDisY = disX + e.y;
-                if (newDisY < price && newDisY < dis[y]) {
+            for (int[] e : g[x]) {
+                int y = e[0];
+                int newDisY = disX + e[1];
+                if (newDisY < dis[y]) {
                     dis[y] = newDisY; // 更新 x 的邻居的最短路
                     // 懒更新堆：只插入数据，不更新堆中数据
                     // 相同节点可能有多个不同的 newDisY，除了最小的 newDisY，其余值都会触发上面的 continue
-                    pq.offer(new Pair(y, newDisY));
+                    pq.offer(new int[]{newDisY, y});
                 }
             }
         }
@@ -122,13 +123,10 @@ class Solution {
 
 ```cpp [sol-C++]
 class Solution {
-    // 返回从起点 start 到每个点的最短路长度 dis
-    // 要求：没有负数边权
-    // 时间复杂度 O(n + mlogm)，注意堆中有 O(m) 个元素
-    vector<long long> shortestPathDijkstra(vector<vector<pair<int, long long>>>& g, int start, int price) {
-        vector<long long> dis(g.size(), LLONG_MAX / 3); // 避免 prices[j] + dis1[j] + dis2[j] 溢出
+    vector<int> dijkstra(vector<vector<pair<int, int>>>& g, int start, int price) {
+        vector<int> dis(g.size(), price);
         // 堆中保存 (起点到节点 x 的最短路长度，节点 x)
-        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<>> pq;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         dis[start] = 0; // 起点到自己的距离是 0
         pq.emplace(0, start);
 
@@ -140,7 +138,7 @@ class Solution {
             }
             for (auto& [y, wt] : g[x]) {
                 auto new_dis_y = dis_x + wt;
-                if (new_dis_y < price && new_dis_y < dis[y]) {
+                if (new_dis_y < dis[y]) {
                     dis[y] = new_dis_y; // 更新 x 的邻居的最短路
                     // 懒更新堆：只插入数据，不更新堆中数据
                     // 相同节点可能有多个不同的 new_dis_y，除了最小的 new_dis_y，其余值都会触发上面的 continue
@@ -154,26 +152,31 @@ class Solution {
 
 public:
     vector<int> minCost(int n, vector<int>& prices, vector<vector<int>>& roads) {
-        vector<vector<pair<int, long long>>> g1(n);
-        vector<vector<pair<int, long long>>> g2(n);
+        int max_price = ranges::max(prices);
+
+        vector<vector<pair<int, int>>> g1(n);
+        vector<vector<pair<int, int>>> g2(n);
         for (auto& e : roads) {
             int x = e[0], y = e[1], cost = e[2], tax = e[3];
-            g1[x].emplace_back(y, cost);
-            g1[y].emplace_back(x, cost);
-            g2[x].emplace_back(y, 1LL * cost * tax);
-            g2[y].emplace_back(x, 1LL * cost * tax);
+            if (cost < max_price) {
+                g1[x].emplace_back(y, cost);
+                g1[y].emplace_back(x, cost);
+            }
+            if (cost <= (max_price - 1) / tax) { // cost * tax < max_price 避免溢出的写法
+                g2[x].emplace_back(y, cost * tax);
+                g2[y].emplace_back(x, cost * tax);
+            }
         }
 
-        vector<int> ans(n);
+        vector<int> ans(n, INT_MAX);
         for (int i = 0; i < n; i++) {
-            int price = prices[i];
-            vector<long long> dis1 = shortestPathDijkstra(g1, i, price);
-            vector<long long> dis2 = shortestPathDijkstra(g2, i, price);
-            long long res = LLONG_MAX;
+            vector<int> dis1 = dijkstra(g1, i, prices[i]);
+            vector<int> dis2 = dijkstra(g2, i, prices[i]);
             for (int j = 0; j < n; j++) {
-                res = min(res, prices[j] + dis1[j] + dis2[j]);
+                if (dis1[j] + dis2[j] < ans[i] - prices[j]) { // 为避免加法溢出，把 prices[j] 移到右边
+                    ans[i] = prices[j] + dis1[j] + dis2[j];
+                }
             }
-            ans[i] = res;
         }
         return ans;
     }
@@ -183,16 +186,14 @@ public:
 ```go [sol-Go]
 type edge struct{ to, wt int }
 
-// 返回从起点 start 到每个点的最短路长度 dis
-// 要求：没有负数边权
-// 时间复杂度 O(n + mlogm)，注意堆中有 O(m) 个元素
 func dijkstra(g [][]edge, start int, price int) []int {
 	dis := make([]int, len(g))
 	for i := range dis {
-		dis[i] = math.MaxInt / 3 // 避免 p+dis1[j]+dis2[j] 加法溢出
+		dis[i] = price
 	}
 	dis[start] = 0
 	h := hp{{0, start}}
+
 	for len(h) > 0 {
 		top := heap.Pop(&h).(pair)
 		d, x := top.dis, top.x
@@ -202,12 +203,13 @@ func dijkstra(g [][]edge, start int, price int) []int {
 		for _, e := range g[x] {
 			y := e.to
 			newD := d + e.wt
-			if newD < price && newD < dis[y] {
+			if newD < dis[y] {
 				dis[y] = newD
 				heap.Push(&h, pair{newD, y})
 			}
 		}
 	}
+
 	return dis
 }
 
