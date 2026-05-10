@@ -2,8 +2,6 @@
 
 所以本题需要计算从起点到终点的最短路。
 
-做法同 [2290. 到达角落需要移除障碍物的最小数目](https://leetcode.cn/problems/minimum-obstacle-removal-to-reach-corner/)。~~曾经的困难题，现在的中等题~~
-
 从 $(i,j)$ 移动到与其相邻的格子 $(x,y)$，视作一条从 $(i,j)$ 到 $(x,y)$ 的有向边，边权为 $\textit{grid}[x][y]$。
 
 求最短路可以用 Dijkstra 算法解决，原理请看 [Dijkstra 算法介绍](https://leetcode.cn/problems/network-delay-time/solution/liang-chong-dijkstra-xie-fa-fu-ti-dan-py-ooe8/)。
