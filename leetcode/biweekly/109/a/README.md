@@ -84,7 +84,7 @@ func isGood(nums []int) bool {
 
 ## 方法二：把 nums 当作辅助数组
 
-由于 $\textit{nums}$ 中的数都是正整数，我们可以在首次遇到元素 $x$ 时，把 $\textit{nums}[x]$ 改成相反数，这样再次遇到 $|x|$ 时，就能通过 $\textit{nums}[|x|] < 0$ 得知 $\textit{nums}$ 中至少有两个 $|x|$。
+由于 $\textit{nums}$ 中的数都是正整数，我们可以在首次遇到元素 $x$ 时，把 $\textit{nums}[x]$ 改成 $-\textit{nums}[x]$，这样再次遇到 $|x|$ 时，就能通过 $\textit{nums}[|x|] < 0$ 得知 $\textit{nums}$ 中至少有两个 $|x|$。
 
 对于 $n$，我们需要判断 $n$ 是否出现超过两次，可以单独用一个变量 $\textit{cntN}$ 统计 $n$ 的出现次数。
 
