@@ -1,46 +1,161 @@
-先来个一行写法：把交集求出来，然后求最小值。
+比较 $x = \textit{nums}_1[0]$ 和 $y = \textit{nums}_2[0]$ 的大小：
 
-```py [sol1-Python3]
+- 如果 $x = y$，由于 $\textit{nums}_1$ 和 $\textit{nums}_2$ 都是递增的，所以 $x$ 是最小的公共值。
+- 如果 $x < y$，那么 $x$ 也小于 $\textit{nums}_2$ 的其余元素，所以 $x$ 不可能是公共值，排除。接下来，比较 $\textit{nums}_1[1]$ 和 $y$ 的大小。
+- 如果 $x > y$，那么 $y$ 也小于 $\textit{nums}_1$ 的其余元素，所以 $y$ 不可能是公共值，排除。接下来，比较 $x$ 和 $\textit{nums}_2[1]$ 的大小。
+
+用两个下标 $i$ 和 $j$ 表示当前要比较 $\textit{nums}_1[i]$ 和 $\textit{nums}_2[j]$ 的大小。
+
+```py [sol-Python3]
+class Solution:
+    def getCommon(self, nums1: List[int], nums2: List[int]) -> int:
+        i, n = 0, len(nums1)
+        j, m = 0, len(nums2)
+        while i < n and j < m:
+            if nums1[i] == nums2[j]:
+                return nums1[i]
+            if nums1[i] < nums2[j]:
+                i += 1
+            else:
+                j += 1
+        return -1
+```
+
+```py [sol-Python3 写法二]
 class Solution:
     def getCommon(self, nums1: List[int], nums2: List[int]) -> int:
         return min(set(nums1) & set(nums2), default=-1)
 ```
 
-双指针可以把空间复杂度优化到 $O(1)$。
-
-[本题视频讲解](https://www.bilibili.com/video/BV1jG4y197qD/)
-
-```py [sol2-Python3]
-class Solution:
-    def getCommon(self, nums1: List[int], nums2: List[int]) -> int:
-        j, m = 0, len(nums2)
-        for x in nums1:
-            while j < m and nums2[j] < x:  # 找下一个 nums2[j] >= x
-                j += 1
-            if j < m and nums2[j] == x:
-                return x
-        return -1
+```java [sol-Java]
+class Solution {
+    public int getCommon(int[] nums1, int[] nums2) {
+        int i = 0, n = nums1.length;
+        int j = 0, m = nums2.length;
+        while (i < n && j < m) {
+            if (nums1[i] == nums2[j]) {
+                return nums1[i];
+            }
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return -1;
+    }
+}
 ```
 
-```go [sol2-Go]
+```cpp [sol-C++]
+class Solution {
+public:
+    int getCommon(vector<int>& nums1, vector<int>& nums2) {
+        int i = 0, n = nums1.size();
+        int j = 0, m = nums2.size();
+        while (i < n && j < m) {
+            if (nums1[i] == nums2[j]) {
+                return nums1[i];
+            }
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return -1;
+    }
+};
+```
+
+```c [sol-C]
+int getCommon(int* nums1, int nums1Size, int* nums2, int nums2Size) {
+    int i = 0, j = 0;
+    while (i < nums1Size && j < nums2Size) {
+        if (nums1[i] == nums2[j]) {
+            return nums1[i];
+        }
+        if (nums1[i] < nums2[j]) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    return -1;
+}
+```
+
+```go [sol-Go]
 func getCommon(nums1, nums2 []int) int {
+	i, n := 0, len(nums1)
 	j, m := 0, len(nums2)
-	for _, x := range nums1 {
-		for j < m && nums2[j] < x { // 找下一个 nums2[j] >= x
-			j++
+	for i < n && j < m {
+		if nums1[i] == nums2[j] {
+			return nums1[i]
 		}
-		if j < m && nums2[j] == x {
-			return x
+		if nums1[i] < nums2[j] {
+			i++
+		} else {
+			j++
 		}
 	}
 	return -1
 }
 ```
 
+```js [sol-JavaScript]
+var getCommon = function(nums1, nums2) {
+    let i = 0, n = nums1.length;
+    let j = 0, m = nums2.length;
+    while (i < n && j < m) {
+        if (nums1[i] === nums2[j]) {
+            return nums1[i];
+        }
+        if (nums1[i] < nums2[j]) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    return -1;
+};
+```
+
+```rust [sol-Rust]
+impl Solution {
+    pub fn get_common(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let n = nums1.len();
+        let m = nums2.len();
+        let mut i = 0;
+        let mut j = 0;
+        while i < n && j < m {
+            if nums1[i] == nums2[j] {
+                return nums1[i];
+            }
+            if nums1[i] < nums2[j] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        -1
+    }
+}
+```
+
 #### 复杂度分析
 
-- 时间复杂度：$O(n+m)$，其中 $n$ 为 $\textit{nums}_1$ 的长度，$m$ 为 $\textit{nums}_2$ 的长度。
-- 空间复杂度：$O(1)$，仅用到若干额外变量。
+- 时间复杂度：$\mathcal{O}(n+m)$，其中 $n$ 是 $\textit{nums}_1$ 的长度，$m$ 是 $\textit{nums}_2$ 的长度。
+- 空间复杂度：$\mathcal{O}(1)$。
+
+## 相似题目
+
+- [350. 两个数组的交集 II](https://leetcode.cn/problems/intersection-of-two-arrays-ii/)
+- [88. 合并两个有序数组](https://leetcode.cn/problems/merge-sorted-array/)
+
+## 专题训练
+
+见下面双指针题单的「**四、双序列双指针**」。
 
 ## 分类题单
 
@@ -51,12 +166,12 @@ func getCommon(nums1, nums2 []int) int {
 3. [单调栈（基础/矩形面积/贡献法/最小字典序）](https://leetcode.cn/circle/discuss/9oZFK9/)
 4. [网格图（DFS/BFS/综合应用）](https://leetcode.cn/circle/discuss/YiXPXW/)
 5. [位运算（基础/性质/拆位/试填/恒等式/思维）](https://leetcode.cn/circle/discuss/dHn9Vk/)
-6. [图论算法（DFS/BFS/拓扑排序/最短路/最小生成树/二分图/基环树/欧拉路径）](https://leetcode.cn/circle/discuss/01LUak/)
-7. [动态规划（入门/背包/状态机/划分/区间/状压/数位/数据结构优化/树形/博弈/概率期望）](https://leetcode.cn/circle/discuss/tXLS3i/)
+6. [图论算法（DFS/BFS/拓扑排序/基环树/最短路/最小生成树/网络流）](https://leetcode.cn/circle/discuss/01LUak/)
+7. [动态规划（入门/背包/划分/状态机/区间/状压/数位/数据结构优化/树形/博弈/概率期望）](https://leetcode.cn/circle/discuss/tXLS3i/)
 8. [常用数据结构（前缀和/差分/栈/队列/堆/字典树/并查集/树状数组/线段树）](https://leetcode.cn/circle/discuss/mOr1u6/)
 9. [数学算法（数论/组合/概率期望/博弈/计算几何/随机算法）](https://leetcode.cn/circle/discuss/IYT3ss/)
 10. [贪心与思维（基本贪心策略/反悔/区间/字典序/数学/思维/脑筋急转弯/构造）](https://leetcode.cn/circle/discuss/g6KTKL/)
-11. [链表、二叉树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA/一般树）](https://leetcode.cn/circle/discuss/K0n2gO/)
+11. [链表、树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA）](https://leetcode.cn/circle/discuss/K0n2gO/)
 12. [字符串（KMP/Z函数/Manacher/字符串哈希/AC自动机/后缀数组/子序列自动机）](https://leetcode.cn/circle/discuss/SJFwQI/)
 
 [我的题解精选（已分类）](https://github.com/EndlessCheng/codeforces-go/blob/master/leetcode/SOLUTIONS.md)
