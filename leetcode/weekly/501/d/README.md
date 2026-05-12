@@ -67,9 +67,7 @@ class Solution {
                 g1[x].add(new int[]{y, cost});
                 g1[y].add(new int[]{x, cost});
             }
-            // cost * tax < maxPrices 等价于 cost * tax <= maxPrices - 1
-            // 为避免乘法溢出，改成除法
-            if (cost <= (maxPrices - 1) / tax) {
+            if ((long) cost * tax < maxPrices) {
                 g2[x].add(new int[]{y, cost * tax});
                 g2[y].add(new int[]{x, cost * tax});
             }
@@ -164,9 +162,7 @@ public:
                 g1[x].emplace_back(y, cost);
                 g1[y].emplace_back(x, cost);
             }
-            // cost * tax < max_price 等价于 cost * tax <= max_price - 1
-            // 为避免乘法溢出，改成除法
-            if (cost <= (max_price - 1) / tax) {
+            if (1LL * cost * tax < max_price) {
                 g2[x].emplace_back(y, cost * tax);
                 g2[y].emplace_back(x, cost * tax);
             }
