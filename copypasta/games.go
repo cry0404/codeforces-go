@@ -27,7 +27,10 @@ mex = minimum excluded
 https://en.wikipedia.org/wiki/Mex_(mathematics)
 
 https://atcoder.jp/contests/dp/tasks/dp_k
-https://codeforces.com/problemset/problem/197/A 1600 入门
+https://codeforces.com/problemset/problem/2002/B 1000
+https://codeforces.com/problemset/problem/1965/A 1400
+- https://atcoder.jp/contests/arc218/tasks/arc218_b 加强版
+https://codeforces.com/problemset/problem/197/A 1600
 https://codeforces.com/problemset/problem/1033/C 1600 三定理的模板题
 https://codeforces.com/problemset/problem/1194/D 1700 1-2-K Game     我的题解 https://www.acwing.com/file_system/file/content/whole/index/content/3179098/
 https://codeforces.com/problemset/problem/1728/D 1800 字符串两端取字母，字典序小的胜
