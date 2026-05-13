@@ -39,9 +39,9 @@ class Solution {
 
             Set<Integer> nxt = new HashSet<>(cur);
             for (int p : cur) {
-                int px = p / 49, py = p / 7 % 7, pz = p % 7;
+                int px = p >> 6, py = p >> 3 & 7, pz = p & 7;
                 for (int q : cur) { // 枚举 cur 中的所有点对 (p, q)
-                    int qx = q / 49, qy = q / 7 % 7, qz = q % 7;
+                    int qx = q >> 6, qy = q >> 3 & 7, qz = q & 7;
                     nxt.add(hash((px + qx) / 2, (py + qy) / 2, (pz + qz) / 2));
                 }
             }
@@ -55,7 +55,7 @@ class Solution {
     }
 
     private int hash(int x, int y, int z) {
-        return x * 49 + y * 7 + z;
+        return x << 6 | y << 3 | z; // 每个数占用 3 个比特位
     }
 }
 ```
@@ -63,7 +63,7 @@ class Solution {
 ```cpp [sol-C++]
 class Solution {
     int hash(int x, int y, int z) {
-        return x * 49 + y * 7 + z;
+        return x << 6 | y << 3 | z; // 每个数占用 3 个比特位
     }
 
 public:
@@ -82,9 +82,9 @@ public:
 
             auto nxt = cur;
             for (int p : cur) {
-                int px = p / 49, py = p / 7 % 7, pz = p % 7;
+                int px = p >> 6, py = p >> 3 & 7, pz = p & 7;
                 for (int q : cur) { // 枚举 cur 中的所有点对 (p, q)
-                    int qx = q / 49, qy = q / 7 % 7, qz = q % 7;
+                    int qx = q >> 6, qy = q >> 3 & 7, qz = q & 7;
                     nxt.insert(hash((px + qx) / 2, (py + qy) / 2, (pz + qz) / 2));
                 }
             }
