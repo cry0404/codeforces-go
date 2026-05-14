@@ -228,8 +228,10 @@ func genTemplates(session *grequests.Session, problemURL string, isContest bool)
 		if i < 0 {
 			panic(-1)
 		}
-		problemURL = "https://atcoder.jp/contests/xxx/tasks/" + problemURL[i+len("/AT_"):]
+		slug := problemURL[i+len("/AT_"):]
+		problemURL = fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", slug[:len(slug)-2], slug)
 	}
+
 	problemName := filepath.Base(problemURL)
 	spIdx := strings.LastIndexByte(problemName, '_')
 	if spIdx < 0 {
