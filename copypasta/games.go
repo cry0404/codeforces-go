@@ -28,6 +28,8 @@ https://en.wikipedia.org/wiki/Mex_(mathematics)
 
 https://atcoder.jp/contests/dp/tasks/dp_k
 https://codeforces.com/problemset/problem/2002/B 1000 如何严谨证明
+https://codeforces.com/problemset/problem/841/B 1100
+- https://leetcode.cn/problems/vowels-game-in-a-string/ LC3227. 字符串元音游戏
 https://codeforces.com/problemset/problem/1965/A 1400
 - https://atcoder.jp/contests/arc218/tasks/arc218_b 加强版
 https://atcoder.jp/contests/arc131/tasks/arc131_c ~CF1590
