@@ -1,8 +1,10 @@
-比较 $x = \textit{nums}_1[0]$ 和 $y = \textit{nums}_2[0]$ 的大小：
+设 $n$ 是 $\textit{nums}_1$ 的长度，$m$ 是 $\textit{nums}_2$ 的长度。
+
+找最小公共值，首先关注两个数组的最小值，也就是比较 $x = \textit{nums}_1[0]$ 和 $y = \textit{nums}_2[0]$ 的大小：
 
 - 如果 $x = y$，由于 $\textit{nums}_1$ 和 $\textit{nums}_2$ 都是递增的，所以 $x$ 是最小的公共值。
-- 如果 $x < y$，那么 $x$ 也小于 $\textit{nums}_2$ 的其余元素，所以 $x$ 不可能是公共值，排除。接下来，比较 $\textit{nums}_1[1]$ 和 $y$ 的大小。
-- 如果 $x > y$，那么 $y$ 也小于 $\textit{nums}_1$ 的其余元素，所以 $y$ 不可能是公共值，排除。接下来，比较 $x$ 和 $\textit{nums}_2[1]$ 的大小。
+- 如果 $x < y$，那么 $x$ 也小于 $\textit{nums}_2$ 的其余元素，所以 $x$ 不可能是公共值，排除，问题变成 $\textit{nums}_1$ 的后缀 $[1,n-1]$ 和 $\textit{nums}_2$ 的最小公共值。对于这个子问题，做法是一样的，比较 $\textit{nums}_1[1]$ 和 $\textit{nums}_2[0]$ 的大小。
+- 如果 $x > y$，那么 $y$ 也小于 $\textit{nums}_1$ 的其余元素，所以 $y$ 不可能是公共值，排除，问题变成 $\textit{nums}_1$ 和 $\textit{nums}_2$ 的后缀 $[1,m-1]$ 的最小公共值。对于这个子问题，做法是一样的，比较 $\textit{nums}_1[0]$ 和 $\textit{nums}_2[1]$ 的大小。
 
 用两个下标 $i$ 和 $j$ 表示当前要比较 $\textit{nums}_1[i]$ 和 $\textit{nums}_2[j]$ 的大小。
 
