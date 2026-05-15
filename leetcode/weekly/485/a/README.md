@@ -45,7 +45,7 @@ public:
             if (!isalpha(ch)) {
                 continue;
             }
-            if (VOWEL.find(ch) != string::npos) {
+            if (VOWEL.contains(ch)) {
                 v++;
             } else {
                 c++;
