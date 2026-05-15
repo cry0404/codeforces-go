@@ -260,15 +260,17 @@ func genTemplates(session *grequests.Session, problemURL string, isContest bool)
 		return err
 	}
 
-	// 拿到题目的难度分
-	rating, err := getRating(problemName)
+	// 拿到题目的 AT 难度分
+	atRating, err := getRating(problemName)
 	if err != nil {
 		fmt.Println("getRating", err)
 	}
+
 	ratingS := ""
-	if rating > 0 {
-		ratingS = " " + strconv.Itoa(rating)
-		ratingS += " ~CF" + strconv.Itoa(convertAT2CFRating(rating))
+	if atRating > 0 {
+		cfRating := convertAT2CFRating(atRating)
+		ratingS += " ~CF" + strconv.Itoa(cfRating)
+		ratingS += " " + strconv.Itoa(atRating)
 	}
 	fmt.Println(problemName, ratingS)
 
