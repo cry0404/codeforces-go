@@ -68,3 +68,21 @@ func getRating(problemName string) (rating int, err error) {
 
 	return
 }
+
+// https://silverfoxxxy.github.io/rating-converter
+// https://silverfoxxxy.github.io/converter.js
+func convertAT2CFRating(atRating int) int {
+	const x1 = 0
+	const x2 = 3900
+	const y1 = -1000 + 60
+	const y2 = 4130 + 85
+	return (x2*(atRating-y1) + x1*(y2-atRating)) / (y2 - y1)
+}
+
+func convertCF2ATRating(cfRating int) int {
+	const x1 = 0
+	const x2 = 3900
+	const y1 = -1000 + 60
+	const y2 = 4130 + 85
+	return (y2*(cfRating-x1) + y1*(x2-cfRating)) / (x2 - x1)
+}

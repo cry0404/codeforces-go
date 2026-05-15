@@ -268,6 +268,7 @@ func genTemplates(session *grequests.Session, problemURL string, isContest bool)
 	ratingS := ""
 	if rating > 0 {
 		ratingS = " " + strconv.Itoa(rating)
+		ratingS += " ~CF" + strconv.Itoa(convertAT2CFRating(rating))
 	}
 	fmt.Println(problemName, ratingS)
 
