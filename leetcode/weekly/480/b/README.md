@@ -49,7 +49,7 @@ class Solution {
     int count_vowel(const R& s) {
         int vowel = 0;
         for (char c : s) {
-            if (VOWELS.find(c) != string::npos) {
+            if (VOWELS.contains(c)) {
                 vowel++;
             }
         }
