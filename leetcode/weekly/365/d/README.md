@@ -1,5 +1,3 @@
-请看 [视频讲解](https://www.bilibili.com/video/BV18j411b7v4/) 第四题。
-
 本题给出的图叫做**内向基环树**。
 
 之前写过一篇题解，介绍了处理基环树问题的一些通用技巧，请看 [内向基环树：拓扑排序+分类讨论](https://leetcode.cn/problems/maximum-employees-to-be-invited-to-a-meeting/solution/nei-xiang-ji-huan-shu-tuo-bu-pai-xu-fen-c1i1b/)
@@ -10,6 +8,8 @@
 - 对于不在基环上的点 $x$，其可以访问到的节点数，是基环的大小，再加上点 $x$ 的深度。这里的深度是指以基环上的点 $\textit{root}$ 为根的树枝作为一棵树，点 $x$ 在这棵树中的深度。这可以从 $\textit{root}$ 出发，在反图上 DFS 得到。
 
 注意题目给出的图可能不是连通的，可能有多棵内向基环树。
+
+[本题视频讲解](https://www.bilibili.com/video/BV18j411b7v4/) 第四题。
 
 ```py [sol-Python3]
 class Solution:
@@ -119,7 +119,7 @@ class Solution {
 ```cpp [sol-C++]
 class Solution {
 public:
-    vector<int> countVisitedNodes(vector<int> &g) {
+    vector<int> countVisitedNodes(vector<int>& g) {
         int n = g.size();
         vector<vector<int>> rg(n); // 反图
         vector<int> deg(n);
@@ -138,40 +138,43 @@ public:
             }
         }
         while (!q.empty()) {
-            int x = q.front();
-            q.pop();
+            int x = q.front(); q.pop();
             int y = g[x];
-            if (--deg[y] == 0) {
+            deg[y]--;
+            if (deg[y] == 0) {
                 q.push(y);
             }
         }
 
-        vector<int> ans(n, 0);
+        vector<int> ans(n);
+
         // 在反图上遍历树枝
-        function<void(int, int)> rdfs = [&](int x, int depth) {
+        auto rdfs = [&](this auto&& rdfs, int x, int depth) -> void {
             ans[x] = depth;
-            for (int y: rg[x]) {
+            for (int y : rg[x]) {
                 if (deg[y] == 0) { // 树枝上的点在拓扑排序后，入度均为 0
                     rdfs(y, depth + 1);
                 }
             }
         };
+
         for (int i = 0; i < n; i++) {
             if (deg[i] <= 0) {
                 continue;
             }
             vector<int> ring;
-            for (int x = i;; x = g[x]) {
+            for (int x = i; ; x = g[x]) {
                 deg[x] = -1; // 将基环上的点的入度标记为 -1，避免重复访问
                 ring.push_back(x); // 收集在基环上的点
                 if (g[x] == i) {
                     break;
                 }
             }
-            for (int x: ring) {
+            for (int x : ring) {
                 rdfs(x, ring.size()); // 为方便计算，以 ring.size() 作为初始深度
             }
         }
+
         return ans;
     }
 };
@@ -238,7 +241,7 @@ func countVisitedNodes(g []int) []int {
 
 #### 复杂度分析
 
-- 时间复杂度：$\mathcal{O}(n)$，其中 $n$ 为 $\textit{edges}$ 的长度。
+- 时间复杂度：$\mathcal{O}(n)$，其中 $n$ 是 $\textit{edges}$ 的长度。
 - 空间复杂度：$\mathcal{O}(n)$。
 
 ## 思考题
@@ -247,9 +250,27 @@ func countVisitedNodes(g []int) []int {
 
 请学习 SCC 强连通分量。
 
-## 相似题目
+## 专题训练
 
-- [2127. 参加会议的最多员工数](https://leetcode.cn/problems/maximum-employees-to-be-invited-to-a-meeting/)
-- [2359. 找到离给定两个节点最近的节点](https://leetcode.cn/problems/find-closest-node-to-given-two-nodes/)
-- [2360. 图中的最长环](https://leetcode.cn/problems/longest-cycle-in-a-graph/)
-- [2836. 在传球游戏中最大化函数值](https://leetcode.cn/problems/maximize-value-of-function-in-a-ball-passing-game)
+见下面图论题单的「**§2.3 基环树**」。
+
+## 分类题单
+
+[如何科学刷题？](https://leetcode.cn/circle/discuss/RvFUtj/)
+
+1. [滑动窗口与双指针（定长/不定长/单序列/双序列/三指针/分组循环）](https://leetcode.cn/circle/discuss/0viNMK/)
+2. [二分算法（二分答案/最小化最大值/最大化最小值/第K小）](https://leetcode.cn/circle/discuss/SqopEo/)
+3. [单调栈（基础/矩形面积/贡献法/最小字典序）](https://leetcode.cn/circle/discuss/9oZFK9/)
+4. [网格图（DFS/BFS/综合应用）](https://leetcode.cn/circle/discuss/YiXPXW/)
+5. [位运算（基础/性质/拆位/试填/恒等式/思维）](https://leetcode.cn/circle/discuss/dHn9Vk/)
+6. [图论算法（DFS/BFS/拓扑排序/基环树/最短路/最小生成树/网络流）](https://leetcode.cn/circle/discuss/01LUak/)
+7. [动态规划（入门/背包/划分/状态机/区间/状压/数位/数据结构优化/树形/博弈/概率期望）](https://leetcode.cn/circle/discuss/tXLS3i/)
+8. [常用数据结构（前缀和/差分/栈/队列/堆/字典树/并查集/树状数组/线段树）](https://leetcode.cn/circle/discuss/mOr1u6/)
+9. [数学算法（数论/组合/概率期望/博弈/计算几何/随机算法）](https://leetcode.cn/circle/discuss/IYT3ss/)
+10. [贪心与思维（基本贪心策略/反悔/区间/字典序/数学/思维/脑筋急转弯/构造）](https://leetcode.cn/circle/discuss/g6KTKL/)
+11. [链表、树与回溯（前后指针/快慢指针/DFS/BFS/直径/LCA）](https://leetcode.cn/circle/discuss/K0n2gO/)
+12. [字符串（KMP/Z函数/Manacher/字符串哈希/AC自动机/后缀数组/子序列自动机）](https://leetcode.cn/circle/discuss/SJFwQI/)
+
+[我的题解精选（已分类）](https://github.com/EndlessCheng/codeforces-go/blob/master/leetcode/SOLUTIONS.md)
+
+欢迎关注 [B站@灵茶山艾府](https://space.bilibili.com/206214)
