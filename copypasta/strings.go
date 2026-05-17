@@ -99,6 +99,7 @@ func _() {
 	// LC1554 只有一个不同字符的字符串 https://leetcode.cn/problems/strings-differ-by-one-character/
 	// https://codeforces.com/problemset?tags=hashing,strings
 	// https://cp-algorithms.com/string/string-hashing.html#toc-tgt-7
+	// https://codeforces.com/problemset/problem/196/D 2800
 	// 倒序哈希 https://leetcode.cn/problems/find-substring-with-given-hash-value/solution/dao-xu-hua-dong-chuang-kou-o1-kong-jian-xpgkp/
 	// todo https://ac.nowcoder.com/acm/contest/64384/D
 	// 与线段树结合，可以做到单点修改 s[i]
@@ -395,8 +396,9 @@ func _() {
 	//
 	// https://www.luogu.com.cn/problem/P2375
 	// https://codeforces.com/problemset/problem/2010/C2 1700
-	// todo 结论 https://codeforces.com/problemset/problem/535/D 1900
+	// https://codeforces.com/problemset/problem/535/D 1900
 	// https://codeforces.com/problemset/problem/1968/G2 2200
+	// https://codeforces.com/problemset/problem/2209/F 2200
 	// https://codeforces.com/problemset/problem/1051/E 2600 DP 
 	// 最小循环节（允许末尾截断）https://codeforces.com/edu/course/2/lesson/3/4/practice/contest/272262/problem/A
 	// s 和 t 是否本质相同，shift 多少次 https://codeforces.com/edu/course/2/lesson/3/4/practice/contest/272262/problem/B
@@ -432,6 +434,7 @@ func _() {
 	calcZ := func(s string) []int {
 		n := len(s)
 		z := make([]int, n)
+		z[0] = n
 		boxL, boxR := 0, 0 // z-box 左右边界（闭区间）
 		for i := 1; i < n; i++ {
 			if i <= boxR {
@@ -442,7 +445,6 @@ func _() {
 				z[i]++
 			}
 		}
-		z[0] = n
 		return z
 	}
 	// 在 text 中查找 pattern 的所有（首字母）位置
@@ -1010,7 +1012,7 @@ func _() {
 			LC1316 https://leetcode.cn/problems/distinct-echo-substrings/
 			题解 https://leetcode.cn/problems/distinct-echo-substrings/solution/geng-kuai-de-onlog2n-jie-fa-hou-zhui-shu-8wby/
 		子串统计类题目
-			用单调栈统计矩形面积 + 用单调栈跳过已经统计的
+			https://atcoder.jp/contests/abc213/tasks/abc213_f 用单调栈统计矩形面积
 			https://codeforces.com/problemset/problem/123/D 2300 注：这是《挑战》上推荐的题目
 			- https://codeforces.com/edu/course/2/lesson/2/5/practice/contest/269656/problem/D 本质上就是 CF123D
 			https://codeforces.com/problemset/problem/802/I 2300 稍作改动
@@ -1018,10 +1020,7 @@ func _() {
 			https://codeforces.com/problemset/problem/653/F 2600
 			todo https://www.luogu.com.cn/problem/P2178
 			 https://www.luogu.com.cn/problem/P3804
-			 AHOI13 差异 https://www.luogu.com.cn/problem/P4248
-			 - 任意两后缀的 LCP 之和
-			 对所有 i，求出 ∑j=1..n LCP(i,j) https://atcoder.jp/contests/abc213/tasks/abc213_f
-			 https://atcoder.jp/contests/abc213/tasks/abc213_f
+			 https://www.luogu.com.cn/problem/P4248 任意两后缀的 LCP 之和
 		从字符串首尾取字符最小化字典序 todo
 			https://oi-wiki.org/string/sa/#_10
 		第 k 小子串 todo
