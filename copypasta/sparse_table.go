@@ -171,50 +171,77 @@ func (s disjointSparseTable[T]) query(l, r int) T {
 // https://blog.nowcoder.net/n/3eccd1386a8846398d3bee62b485309b
 // https://codeforces.com/problemset/problem/1301/E 2500
 // https://leetcode.cn/problems/largest-local-values-in-a-matrix-ii/
-func submatrixMax(a [][]int) {
+type sparseTable2D[T any] struct {
+	// st[k1][k2][n][m] 表示左上角在 (i, j)，右下角在 (i+(1<<k1)-1, j+(1<<k2)-1) 的子矩阵最大值
+	st [][][][]T
+	op func(T, T) T
+}
+
+// 时间复杂度 O(n * m * log n * log m)
+func newSparseTable2D[T any](a [][]T, op func(T, T) T) sparseTable2D[T] {
 	n, m := len(a), len(a[0])
 	wn, wm := bits.Len(uint(n)), bits.Len(uint(m))
-	const MX = 8 // max(wn, wm)
-	// st[i][j][k1][k2] 表示左上角在 (i, j)，右下角在 (i+(1<<k1)-1, j+(1<<k2)-1) 的子矩阵最大值
-	st := make([][][MX][MX]int, n)
-	for i := range st {
-		st[i] = make([][MX][MX]int, m)
-	}
-	for i, row := range a {
-		for j, x := range row {
-			st[i][j][0][0] = x
+
+	// st[k1][k2][n][m] 表示左上角在 (i, j)，右下角在 (i+(1<<k1)-1, j+(1<<k2)-1) 的子矩阵最大值
+	st := make([][][][]T, wn)
+	for k1 := range st {
+		st[k1] = make([][][]T, wm)
+		for k2 := range st[k1] {
+			st[k1][k2] = make([][]T, n)
+			for i := range st[k1][k2] {
+				st[k1][k2][i] = make([]T, m)
+			}
 		}
 	}
+
+	// 初始值
+	st[0][0] = a // 如果后面会修改 a，这里要 clone
+
 	// 单独计算 k1 = 0
 	for k2 := 1; k2 < wm; k2++ {
 		for i := range n {
 			for j := range m - 1<<k2 + 1 {
-				st[i][j][0][k2] = max(st[i][j][0][k2-1], st[i][j+1<<(k2-1)][0][k2-1])
+				st[0][k2][i][j] = op(st[0][k2-1][i][j], st[0][k2-1][i][j+1<<(k2-1)])
 			}
 		}
 	}
+
 	for k1 := 1; k1 < wn; k1++ {
 		for k2 := range wm {
 			for i := range n - 1<<k1 + 1 {
 				for j := range m - 1<<k2 + 1 {
-					st[i][j][k1][k2] = max(st[i][j][k1-1][k2], st[i+1<<(k1-1)][j][k1-1][k2])
+					st[k1][k2][i][j] = op(st[k1-1][k2][i][j], st[k1-1][k2][i+1<<(k1-1)][j])
 				}
 			}
 		}
 	}
+	return sparseTable2D[T]{st, op}
+}
 
-	// 返回子矩阵最大值
-	// 左闭右开，行号范围 [r1, r2)，列号范围 [c1, c2)
-	query := func(r1, c1, r2, c2 int) int {
-		r1 = max(r1, 0)
-		c1 = max(c1, 0)
-		r2 = min(r2, n)
-		c2 = min(c2, m)
-		k1 := bits.Len(uint(r2-r1)) - 1
-		k2 := bits.Len(uint(c2-c1)) - 1
-		// 四个子矩阵的并集
-		return max(st[r1][c1][k1][k2], st[r2-1<<k1][c1][k1][k2], st[r1][c2-1<<k2][k1][k2], st[r2-1<<k1][c2-1<<k2][k1][k2])
+// 返回子矩阵最大值
+// 左闭右开，行号范围 [r1, r2)，列号范围 [c1, c2)，下标从 0 开始
+// 时间复杂度 O(1)
+func (s sparseTable2D[T]) query(r1, c1, r2, c2 int) T {
+	//r1 = max(r1, 0)
+	//c1 = max(c1, 0)
+	//r2 = min(r2, len(s.st[0][0]))
+	//c2 = min(c2, len(s.st[0][0][0]))
+	k1 := bits.Len(uint(r2-r1)) - 1
+	k2 := bits.Len(uint(c2-c1)) - 1
+	// 视作四个子矩阵的并集
+	return s.op(
+		s.op(s.st[k1][k2][r1][c1], s.st[k1][k2][r2-1<<k1][c1]),
+		s.op(s.st[k1][k2][r1][c2-1<<k2], s.st[k1][k2][r2-1<<k1][c2-1<<k2]),
+	)
+}
+
+// 使用方法举例
+func sparseTable2DExample() {
+	a := [][]int{
+		{3, 1, 4},
+		{1, 5, 9},
 	}
-
-	_ = query
+	st := newSparseTable2D(a, func(a, b int) int { return max(a, b) })
+	// 注意是左闭右开
+	fmt.Println(st.query(0, 1, 2, 3)) // 9
 }
