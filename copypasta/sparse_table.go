@@ -168,13 +168,9 @@ func (s disjointSparseTable[T]) query(l, r int) T {
 //
 
 // 二维 ST 表
-// 其一 · 保证询问的是正方形区域
-// https://blog.csdn.net/weixin_41162823/article/details/98471161
-// https://www.luogu.com.cn/problem/P2216
-
-// 其二 · 询问任意长宽
 // https://blog.nowcoder.net/n/3eccd1386a8846398d3bee62b485309b
 // https://codeforces.com/problemset/problem/1301/E 2500
+// https://leetcode.cn/problems/largest-local-values-in-a-matrix-ii/
 func submatrixMax(a [][]int) {
 	n, m := len(a), len(a[0])
 	wn, wm := bits.Len(uint(n)), bits.Len(uint(m))
