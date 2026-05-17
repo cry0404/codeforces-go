@@ -182,7 +182,6 @@ func newSparseTable2D[T any](a [][]T, op func(T, T) T) sparseTable2D[T] {
 	n, m := len(a), len(a[0])
 	wn, wm := bits.Len(uint(n)), bits.Len(uint(m))
 
-	// st[k1][k2][n][m] 表示左上角在 (i, j)，右下角在 (i+(1<<k1)-1, j+(1<<k2)-1) 的子矩阵最大值
 	st := make([][][][]T, wn)
 	for k1 := range st {
 		st[k1] = make([][][]T, wm)
@@ -215,6 +214,7 @@ func newSparseTable2D[T any](a [][]T, op func(T, T) T) sparseTable2D[T] {
 			}
 		}
 	}
+
 	return sparseTable2D[T]{st, op}
 }
 
