@@ -272,7 +272,7 @@ func genTemplates(session *grequests.Session, problemURL string, isContest bool)
 		ratingS += " ~CF" + strconv.Itoa(cfRating)
 		ratingS += " " + strconv.Itoa(atRating)
 	}
-	fmt.Println(problemName, ratingS)
+	fmt.Printf("%s%s\n", problemName, ratingS)
 
 	submitURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submit?taskScreenName=%s", contestName, problemName)
 	statusURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submissions?f.LanguageName=Go&f.Status=AC&f.Task=%s&orderBy=source_length", contestName, problemName)
