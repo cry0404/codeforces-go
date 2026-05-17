@@ -59,6 +59,7 @@ https://codeforces.com/problemset/problem/652/D 1800 区间包含计数
 https://codeforces.com/problemset/problem/597/C 1900 长为 k 的上升子序列个数
 https://codeforces.com/problemset/problem/961/E 1900（不止一种做法）
 https://codeforces.com/problemset/problem/2042/D 1900
+https://atcoder.jp/contests/abc369/tasks/abc369_f ~CF1935
 https://codeforces.com/problemset/problem/629/D 2000
 https://codeforces.com/problemset/problem/1288/E 2000 转化
 https://codeforces.com/problemset/problem/1891/F 2000 离线 树 回溯
@@ -73,6 +74,7 @@ https://codeforces.com/problemset/problem/762/E 2200 离散化
 - https://codeforces.com/problemset/problem/1045/G 2200 同 762E
 https://codeforces.com/problemset/problem/1194/E 2200 多变量统计
 https://codeforces.com/problemset/problem/2065/H 2200
+https://codeforces.com/problemset/problem/2143/D2 2200
 https://codeforces.com/problemset/problem/628/E 2300 Z 形状个数
 - https://leetcode.cn/problems/max-black-square-lcci/ 相似题目
 https://codeforces.com/problemset/problem/1167/F 2300
@@ -491,6 +493,7 @@ func _(n int) {
 	// https://codeforces.com/problemset/problem/1096/F 2300 扩展：某些位置上的数待定时的逆序对的期望值 
 	// https://codeforces.com/problemset/problem/220/E 2400 前缀+后缀
 	// https://codeforces.com/problemset/problem/749/E 2400 期望 贡献
+	// https://atcoder.jp/contests/abc190/tasks/abc190_f
 	// https://atcoder.jp/contests/abc296/tasks/abc296_f
 	// https://atcoder.jp/contests/arc136/tasks/arc136_b
 	// https://atcoder.jp/contests/abc396/tasks/abc396_f
