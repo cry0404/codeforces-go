@@ -175,3 +175,50 @@ func (s disjointSparseTable[T]) query(l, r int) T {
 // 其二 · 询问任意长宽
 // https://blog.nowcoder.net/n/3eccd1386a8846398d3bee62b485309b
 // https://codeforces.com/problemset/problem/1301/E 2500
+func submatrixMax(a [][]int) {
+	n, m := len(a), len(a[0])
+	wn, wm := bits.Len(uint(n)), bits.Len(uint(m))
+	const MX = 8 // max(wn, wm)
+	// st[i][j][k1][k2] 表示左上角在 (i, j)，右下角在 (i+(1<<k1)-1, j+(1<<k2)-1) 的子矩阵最大值
+	st := make([][][MX][MX]int, n)
+	for i := range st {
+		st[i] = make([][MX][MX]int, m)
+	}
+	for i, row := range a {
+		for j, x := range row {
+			st[i][j][0][0] = x
+		}
+	}
+	// 单独计算 k1 = 0
+	for k2 := 1; k2 < wm; k2++ {
+		for i := range n {
+			for j := range m - 1<<k2 + 1 {
+				st[i][j][0][k2] = max(st[i][j][0][k2-1], st[i][j+1<<(k2-1)][0][k2-1])
+			}
+		}
+	}
+	for k1 := 1; k1 < wn; k1++ {
+		for k2 := range wm {
+			for i := range n - 1<<k1 + 1 {
+				for j := range m - 1<<k2 + 1 {
+					st[i][j][k1][k2] = max(st[i][j][k1-1][k2], st[i+1<<(k1-1)][j][k1-1][k2])
+				}
+			}
+		}
+	}
+
+	// 返回子矩阵最大值
+	// 左闭右开，行号范围 [r1, r2)，列号范围 [c1, c2)
+	query := func(r1, c1, r2, c2 int) int {
+		r1 = max(r1, 0)
+		c1 = max(c1, 0)
+		r2 = min(r2, n)
+		c2 = min(c2, m)
+		k1 := bits.Len(uint(r2-r1)) - 1
+		k2 := bits.Len(uint(c2-c1)) - 1
+		// 四个子矩阵的并集
+		return max(st[r1][c1][k1][k2], st[r2-1<<k1][c1][k1][k2], st[r1][c2-1<<k2][k1][k2], st[r2-1<<k1][c2-1<<k2][k1][k2])
+	}
+
+	_ = query
+}
